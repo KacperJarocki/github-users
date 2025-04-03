@@ -23,4 +23,9 @@ public class GithubBranches {
   public String getLastCommitSha() {
     return this.lastCommitSha;
   }
+
+  public GithubBranches(String name, String lastCommitSha) {
+    this.name = name;
+    this.lastCommitSha = lastCommitSha;
+  }
 }

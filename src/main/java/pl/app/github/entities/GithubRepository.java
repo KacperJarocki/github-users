@@ -34,8 +34,8 @@ public class GithubRepository {
   public static class Owner {
     public String login;
 
-    public Owner(String username) {
-      this.login = username;
+    public Owner(String login) {
+      this.login = login;
     }
   }
 
@@ -59,6 +59,7 @@ public class GithubRepository {
     return this.branches;
   }
 
+  @JsonProperty("fork")
   public Boolean isAFork() {
     return this.fork;
   }

@@ -66,10 +66,13 @@ class GithubServiceTests {
     when(restTemplate.getForEntity(anyString(), eq(GithubRepository[].class), eq(username)))
         .thenReturn(new ResponseEntity<>(new GithubRepository[] { forkedRepo }, HttpStatus.OK));
 
-    List<GithubRepository> result = githubService.getUserRepositories(username);
+    when(restTemplate.getForEntity(anyString(), eq(GithubBranches[].class), eq(username), eq("forked-repo")))
+        .thenReturn(new ResponseEntity<>(new GithubBranches[] {}, HttpStatus.OK));
+
+    List<GithubRepository> result = githubService.getUserRepositoriesNotForked(username);
 
     assertNotNull(result);
-    assertTrue(result.isEmpty()); // Wszystkie repozytoria były forkami
+    assertTrue(result.isEmpty());
   }
 
   @Test
@@ -91,10 +94,12 @@ class GithubServiceTests {
     when(restTemplate.getForEntity(anyString(), eq(GithubRepository[].class), eq(username)))
         .thenReturn(new ResponseEntity<>(new GithubRepository[] { ownRepo, forkedRepo }, HttpStatus.OK));
 
+    GithubBranches testBranch = new GithubBranches("main", "abc123");
     when(restTemplate.getForEntity(anyString(), eq(GithubBranches[].class), eq(username), eq("my-repo")))
-        .thenReturn(new ResponseEntity<>(new GithubBranches[] {}, HttpStatus.OK));
-
-    List<GithubRepository> result = githubService.getUserRepositories(username);
+        .thenReturn(new ResponseEntity<>(new GithubBranches[] { testBranch }, HttpStatus.OK));
+    when(restTemplate.getForEntity(anyString(), eq(GithubBranches[].class), eq(username), eq("forked-repo")))
+        .thenReturn(new ResponseEntity<>(new GithubBranches[] { testBranch }, HttpStatus.OK));
+    List<GithubRepository> result = githubService.getUserRepositoriesNotForked(username);
 
     assertNotNull(result);
     assertEquals(1, result.size());

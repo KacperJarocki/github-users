@@ -7,6 +7,8 @@ import org.springframework.web.client.RestTemplate;
 import pl.app.github.entities.GithubBranches;
 import pl.app.github.entities.GithubRepository;
 import org.springframework.http.ResponseEntity;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 
 @Service
@@ -40,5 +42,17 @@ public class GithubService {
 
   public int hello() {
     return 1;
+  }
+
+  public List<GithubRepository> getUserRepositoriesNotForked(String username) {
+    List<GithubRepository> list = getUserRepositories(username);
+    List<GithubRepository> listNotForked = new ArrayList<GithubRepository>();
+    for (GithubRepository repository : list) {
+      if (!repository.isAFork()) {
+        listNotForked.add(repository);
+      }
+    }
+    return listNotForked;
+
   }
 }

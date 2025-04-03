@@ -22,7 +22,7 @@ public class GithubController {
 
   @GetMapping("/github/{username}")
   public ResponseEntity getRepositories(@PathVariable String username) {
-    List<GithubRepository> repositories = githubService.getUserRepositories(username);
+    List<GithubRepository> repositories = githubService.getUserRepositoriesNotForked(username);
     return ResponseEntity.ok(repositories);
   }
 }
