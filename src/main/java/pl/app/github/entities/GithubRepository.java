@@ -2,8 +2,6 @@ package pl.app.github.entities;
 
 import java.util.List;
 
-import org.springframework.web.client.RestTemplate;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -22,8 +20,23 @@ public class GithubRepository {
     this.ownerLogin = owner.login;
   }
 
+  public GithubRepository(
+      @JsonProperty("name") String repositoryName,
+      @JsonProperty("owner") Owner owner,
+      @JsonProperty("fork") Boolean fork,
+      List<GithubBranches> branches) {
+    this.repositoryName = repositoryName;
+    this.ownerLogin = owner.login;
+    this.fork = fork;
+    this.branches = branches;
+  }
+
   public static class Owner {
     public String login;
+
+    public Owner(String username) {
+      this.login = username;
+    }
   }
 
   public Boolean checkName(String name) {
@@ -44,5 +57,9 @@ public class GithubRepository {
 
   public List<GithubBranches> getBranches() {
     return this.branches;
+  }
+
+  public Boolean isAFork() {
+    return this.fork;
   }
 }
