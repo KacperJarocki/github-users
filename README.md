@@ -24,20 +24,20 @@ This project provides a service for interacting with GitHub repositories. It all
    git clone https://github.com/your-username/github-repository-service.git
    cd github-repository-service
 2. Build the project using Gradle:
-   ```bash
-```./gradlew build
+```bash
+./gradlew build
 ```
 Or, if you have Gradle installed globally, you can use
 ```bash
-```gradle build
+gradle build
 ```
 3. Run the application:
 ```Bash
-```./gradlew bootRun
+./gradlew bootRun
 ```
 or:
 ```bash
-```gradle bootRun
+gradle bootRun
 ```
 ### Endpoint
 
@@ -76,6 +76,7 @@ Navigate to the project directory.
 Run the tests with Gradle:
 ```bash
 ./gradlew test
+```
 Or, if you have Gradle installed globally:
 
 ```bash
