@@ -12,12 +12,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import pl.app.github.entities.GithubRepository;
 import pl.app.github.entities.GithubBranches;
+import pl.app.github.exceptions.UserNotFoundException;
 
 class GithubServiceTests {
 
@@ -35,10 +37,22 @@ class GithubServiceTests {
   @Test
   void shouldReturn404WhenUserDoesNotExist() {
     String username = "nonexistentUser";
-    when(restTemplate.getForEntity(anyString(), eq(GithubRepository[].class), eq(username)))
-        .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
-    assertThrows(HttpClientErrorException.class, () -> githubService.getUserRepositories(username));
+    when(restTemplate.getForEntity(
+        eq("https://api.github.com/users/{username}/repos"),
+        eq(GithubRepository[].class),
+        eq(username)))
+        .thenThrow(HttpClientErrorException.create(
+            HttpStatus.NOT_FOUND,
+            "Not Found",
+            HttpHeaders.EMPTY,
+            null,
+            null));
+    UserNotFoundException exception = assertThrows(
+        UserNotFoundException.class,
+        () -> githubService.getUserRepositories(username));
+
+    assertEquals("User 'nonexistentUser' not found", exception.getMessage());
   }
 
   @Test
