@@ -20,6 +20,10 @@ public class GithubBranches {
     public String sha;
   }
 
+  public String getName() {
+    return this.name;
+  }
+
   public String getLastCommitSha() {
     return this.lastCommitSha;
   }

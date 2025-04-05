@@ -1,11 +1,15 @@
 package pl.app.github.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import pl.app.github.entities.GithubBranches;
 import pl.app.github.entities.GithubRepository;
+import pl.app.github.exceptions.UserNotFoundException;
+
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
@@ -20,15 +24,21 @@ public class GithubService {
   }
 
   public List<GithubRepository> getUserRepositories(String username) {
-    ResponseEntity<GithubRepository[]> response = restTemplate.getForEntity(
-        "https://api.github.com/users/{username}/repos",
-        GithubRepository[].class,
-        username);
-    List<GithubRepository> repositories = Arrays.asList(response.getBody());
-    for (GithubRepository repository : repositories) {
-      this.setBranchesForRepository(repository);
+    try {
+      ResponseEntity<GithubRepository[]> response = restTemplate.getForEntity(
+          "https://api.github.com/users/{username}/repos",
+          GithubRepository[].class,
+          username);
+
+      List<GithubRepository> repositories = Arrays.asList(response.getBody());
+      for (GithubRepository repository : repositories) {
+        this.setBranchesForRepository(repository);
+      }
+      return repositories;
+
+    } catch (HttpClientErrorException.NotFound e) {
+      throw new UserNotFoundException(username);
     }
-    return repositories;
   }
 
   public void setBranchesForRepository(GithubRepository githubRepository) {
@@ -45,14 +55,9 @@ public class GithubService {
   }
 
   public List<GithubRepository> getUserRepositoriesNotForked(String username) {
-    List<GithubRepository> list = getUserRepositories(username);
-    List<GithubRepository> listNotForked = new ArrayList<GithubRepository>();
-    for (GithubRepository repository : list) {
-      if (!repository.isAFork()) {
-        listNotForked.add(repository);
-      }
-    }
-    return listNotForked;
+    return getUserRepositories(username).stream()
+        .filter(repo -> !repo.isAFork())
+        .collect(Collectors.toList());
 
   }
 }
